@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cashflow-Rebalancing</title>
+  <meta name="description" content="ETF Cashflow-Rebalancing Rechner – optimierte monatliche Sparraten-Verteilung zur Zielallokation ohne Verkäufe." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <nav class="topbar">
+        <div class="brand"><span class="brand-mark"></span>Rebalancing</div>
+        <button id="themeToggle" class="ghost-btn" type="button" aria-label="Farbschema wechseln">◐</button>
+      </nav>
+      <p class="eyebrow">ETF Cashflow-Rebalancing Rechner</p>
+      <h1>Zurück zur Zielallokation –<br /><span class="accent">ohne einen Euro zu verkaufen.</span></h1>
+      <p class="lede">Optimierte monatliche Sparraten-Verteilung zur Zielallokation ohne zusätzliches Gesamtbudget.</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <span class="kpi-label">Depotwert</span>
+          <span class="kpi-value" id="kpiTotal">–</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Benötigter Cashflow</span>
+          <span class="kpi-value" id="kpiGap">–</span>
+          <span class="kpi-sub">bis Ziel ohne Verkauf</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Ziel erreicht in</span>
+          <span class="kpi-value" id="kpiMonths">–</span>
+          <span class="kpi-sub" id="kpiMonthsSub">bei aktueller Sparrate</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Max. Abweichung</span>
+          <span class="kpi-value" id="kpiDrift">–</span>
+          <span class="kpi-sub">Prozentpunkte</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Eingaben -->
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <p class="exhibit">Schritt 1</p>
+          <h2>Depot &amp; Zielallokation</h2>
+        </div>
+        <div class="head-actions">
+          <button id="resetBtn" class="text-btn" type="button">Beispiel laden</button>
+          <button id="addBtn" class="pill-btn" type="button">+ Position</button>
+        </div>
+      </div>
+
+      <div class="input-table" role="table">
+        <div class="it-row it-head" role="row">
+          <span>ETF / Position</span><span class="num">Akt. Wert (€)</span><span class="num">Ziel-Anteil (%)</span><span></span>
+        </div>
+        <div id="positions"></div>
+        <div class="it-row it-foot" role="row">
+          <span>Gesamt</span><span class="num" id="sumValue">–</span><span class="num" id="sumTarget">–</span><span></span>
+        </div>
+      </div>
+      <p id="targetWarn" class="warn" hidden></p>
+
+      <div class="controls">
+        <label class="field">
+          <span>Monatliche Sparrate (€)</span>
+          <input id="rate" type="number" min="0" step="10" inputmode="decimal" />
+        </label>
+        <label class="field">
+          <span>Planungshorizont (Monate)</span>
+          <input id="horizon" type="number" min="1" max="120" step="1" inputmode="numeric" />
+        </label>
+        <label class="switch">
+          <input id="roundEuro" type="checkbox" />
+          <span class="slider"></span>
+          <span class="switch-label">Auf ganze Euro runden</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Ist vs Ziel -->
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <p class="exhibit">Exhibit 1</p>
+          <h2 id="allocTitle">Ist- vs. Ziel-Allokation</h2>
+        </div>
+        <div class="legend">
+          <span><i class="lg-bar"></i>Ist</span><span><i class="lg-tick"></i>Ziel</span>
+        </div>
+      </div>
+      <div id="allocChart" class="alloc-chart"></div>
+    </section>
+
+    <!-- Aktuell Tabelle (Excel-Logik) -->
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <p class="exhibit">Exhibit 2</p>
+          <h2>Rebalancing-Bedarf ohne Verkauf</h2>
+          <p class="sub">Max.-Bestimmung = Akt. Wert ÷ Ziel-Anteil. Der höchste Wert legt fest, auf welches Depotvolumen alle Positionen aufgefüllt werden müssen.</p>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table class="data" id="currentTable"></table>
+      </div>
+    </section>
+
+    <!-- Monatsplan -->
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <p class="exhibit">Exhibit 3</p>
+          <h2 id="planTitle">Monatliche Sparraten-Verteilung</h2>
+          <p class="sub">Jeden Monat wird die Sparrate so verteilt, dass die Abweichung zur Zielallokation minimal wird – untergewichtete Positionen zuerst.</p>
+        </div>
+        <button id="csvBtn" class="text-btn" type="button">CSV exportieren</button>
+      </div>
+      <div id="planChart" class="plan-chart"></div>
+      <div id="planLegend" class="legend legend-wrap"></div>
+      <div class="table-scroll">
+        <table class="data" id="planTable"></table>
+      </div>
+    </section>
+
+    <section class="card months" id="monthCards"></section>
+
+    <footer class="foot">
+      <p>Keine Anlageberatung. Berechnung lokal im Browser – Eingaben werden nur auf diesem Gerät gespeichert.</p>
+    </footer>
+  </main>
+
+  <template id="posTpl">
+    <div class="it-row" role="row">
+      <span class="name-cell"><i class="dot"></i><input class="in-name" type="text" aria-label="Name" /></span>
+      <input class="in-value num" type="number" min="0" step="1" inputmode="decimal" aria-label="Aktueller Wert" />
+      <input class="in-target num" type="number" min="0" max="100" step="0.1" inputmode="decimal" aria-label="Ziel-Anteil" />
+      <button class="rm" type="button" aria-label="Position entfernen">×</button>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
