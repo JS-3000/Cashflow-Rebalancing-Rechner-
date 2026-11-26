@@ -387,6 +387,14 @@
     $("#rate").value = state.rate; $("#horizon").value = state.horizon; $("#roundEuro").checked = !!state.roundEuro;
   }
 
+  // Beim Klick in ein Eingabefeld den gesamten Inhalt markieren
+  document.addEventListener("focusin", (e) => {
+    const el = e.target;
+    if (el instanceof HTMLInputElement && (el.type === "text" || el.type === "number")) {
+      setTimeout(() => { try { el.select(); } catch (_) { /* ignore */ } }, 0);
+    }
+  });
+
   initTheme();
   bindControls();
   renderInputs();

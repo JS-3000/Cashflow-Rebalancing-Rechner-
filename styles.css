@@ -69,7 +69,7 @@ body {
 .kpi-value.good { color: var(--green-2); }
 
 /* ---------- Cards ---------- */
-main { padding-top: 28px; padding-bottom: 40px; }
+main.wrap { padding-top: 32px; padding-bottom: 40px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
 .section-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
 .exhibit { margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--green); }
